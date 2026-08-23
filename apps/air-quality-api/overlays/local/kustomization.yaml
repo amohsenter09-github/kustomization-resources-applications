@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+  - namespace.yaml
+
+namespace: air-quality-api
+
+images:
+  - name: air-quality-api
+    newTag: local
+
+patches:
+  - target:
+      group: networking.k8s.io
+      version: v1
+      kind: Ingress
+      name: air-quality-api
+    path: ingress-host.patch.yaml
+  - path: image-pull-policy.patch.yaml
