@@ -9,7 +9,7 @@ namespace: weather-api-cnpe-prod
 
 images:
   - name: weather-api
-    newTag: cnpe-prod
+    newTag: "01"
 
 patches:
   - target:

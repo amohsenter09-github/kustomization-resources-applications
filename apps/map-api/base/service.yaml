@@ -10,5 +10,5 @@ spec:
     app: map-api
   ports:
     - name: http
-      port: 80
-      targetPort: 8000
+      port: 8002
+      targetPort: http

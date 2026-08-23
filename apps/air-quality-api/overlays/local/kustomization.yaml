@@ -9,7 +9,7 @@ namespace: air-quality-api
 
 images:
   - name: air-quality-api
-    newTag: local
+    newTag: "01"
 
 patches:
   - target:

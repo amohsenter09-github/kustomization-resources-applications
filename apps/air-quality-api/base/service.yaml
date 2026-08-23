@@ -10,5 +10,5 @@ spec:
     app: air-quality-api
   ports:
     - name: http
-      port: 80
-      targetPort: 8000
+      port: 8001
+      targetPort: http

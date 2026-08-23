@@ -9,7 +9,7 @@ namespace: air-quality-api-cnpe-dev
 
 images:
   - name: air-quality-api
-    newTag: cnpe-dev
+    newTag: "01"
 
 patches:
   - target:

@@ -9,7 +9,7 @@ namespace: map-api-cnpe-prod
 
 images:
   - name: map-api
-    newTag: cnpe-prod
+    newTag: "01"
 
 patches:
   - target:

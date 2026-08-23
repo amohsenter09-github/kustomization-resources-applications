@@ -6,3 +6,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
+
+commonAnnotations:
+  app.kubernetes.io/source-repo: https://github.com/amohsenter09-github/air-quality-api
+  app.kubernetes.io/version: "01"

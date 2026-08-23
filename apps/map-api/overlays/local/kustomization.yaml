@@ -9,7 +9,7 @@ namespace: map-api
 
 images:
   - name: map-api
-    newTag: local
+    newTag: "01"
 
 patches:
   - target:
