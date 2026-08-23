@@ -6,6 +6,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
+  - httproute.yaml
 
 commonAnnotations:
   app.kubernetes.io/source-repo: https://github.com/amohsenter09-github/weather-api-fastapi

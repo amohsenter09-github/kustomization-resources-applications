@@ -1,0 +1,21 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: weather-api
+  labels:
+    app: weather-api
+spec:
+  parentRefs:
+    - name: local-alb
+      namespace: envoy-gateway-system
+      sectionName: http
+  hostnames:
+    - weather-api.local
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: weather-api
+          port: 8000

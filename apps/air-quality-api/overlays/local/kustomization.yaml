@@ -18,4 +18,10 @@ patches:
       kind: Ingress
       name: air-quality-api
     path: ingress-host.patch.yaml
+  - target:
+      group: gateway.networking.k8s.io
+      version: v1
+      kind: HTTPRoute
+      name: air-quality-api
+    path: httproute-host.patch.yaml
   - path: image-pull-policy.patch.yaml

@@ -1,0 +1,21 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: air-quality-api
+  labels:
+    app: air-quality-api
+spec:
+  parentRefs:
+    - name: local-alb
+      namespace: envoy-gateway-system
+      sectionName: http
+  hostnames:
+    - air-quality-api.local
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: air-quality-api
+          port: 8001
