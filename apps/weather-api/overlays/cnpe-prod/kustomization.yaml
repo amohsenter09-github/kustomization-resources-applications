@@ -25,3 +25,4 @@ patches:
       name: weather-api
     path: httproute-host.patch.yaml
   - path: replicas.patch.yaml
+  - path: image-pull-policy.patch.yaml
