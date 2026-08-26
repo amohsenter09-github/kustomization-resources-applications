@@ -1,0 +1,3 @@
+- op: add
+  path: /data/DATABASE_URL
+  value: "postgresql+asyncpg://map:map@postgres:5432/map"
