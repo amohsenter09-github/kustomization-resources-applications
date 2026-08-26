@@ -1,0 +1,6 @@
+- op: add
+  path: /data/DATABASE_URL
+  value: "postgresql+asyncpg://map:map@postgres:5432/map"
+- op: replace
+  path: /data/UI_THEME
+  value: green

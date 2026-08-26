@@ -4,6 +4,8 @@ kind: Kustomization
 resources:
   - ../../base
   - namespace.yaml
+  - postgres-configmap.yaml
+  - postgres.yaml
 
 namespace: map-api-cnpe-prod
 
@@ -20,3 +22,14 @@ patches:
     path: httproute-host.patch.yaml
   - path: replicas.patch.yaml
   - path: image-pull-policy.patch.yaml
+  - target:
+      version: v1
+      kind: ConfigMap
+      name: map-api
+    path: configmap-db.patch.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: map-api
+    path: deployment-db.patch.yaml
