@@ -2,7 +2,7 @@
 
 Global Kubernetes manifests for the Weather, Air Quality, and Map microservices.
 
-Application code and Dockerfiles live in the app repos. This repo owns Deployments, Services, Ingress, ConfigMaps, environment overlays, and the local Kind cluster topology.
+Application code and Dockerfiles live in the app repos. This repo owns Deployments, Services, HTTPRoutes, ConfigMaps, environment overlays, and the local Kind cluster topology.
 
 All overlays currently deploy image tag **`01`**.
 
@@ -32,7 +32,7 @@ bash scripts/kind-status.sh
 bash scripts/kind-down.sh
 ```
 
-`kind-up.sh` creates the clusters and installs ingress-nginx. It does not apply application overlays.
+`kind-up.sh` creates the clusters and installs ingress-nginx on **bootstrap** only (Argo CD). Workload clusters use Envoy Gateway.
 
 When you are ready to deploy apps, use Argo CD from the sibling `bootstrap-control-plane` repo. Direct apply is only a fallback:
 

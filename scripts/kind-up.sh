@@ -29,15 +29,12 @@ for name in "${CLUSTERS[@]}"; do
   context="kind-${name}"
   echo "Waiting for $context node to be Ready ..."
   kubectl --context "$context" wait --for=condition=Ready node --all --timeout=180s
-  echo "Installing ingress-nginx on $name ..."
-  kubectl --context "$context" apply -f "$INGRESS_MANIFEST"
 done
 
-for name in "${CLUSTERS[@]}"; do
-  context="kind-${name}"
-  echo "Waiting for ingress-nginx on $name ..."
-  kubectl --context "$context" -n ingress-nginx wait --for=condition=available deploy/ingress-nginx-controller --timeout=300s
-done
+echo "Installing ingress-nginx on bootstrap (Argo CD UI only) ..."
+kubectl --context kind-bootstrap apply -f "$INGRESS_MANIFEST"
+echo "Waiting for ingress-nginx on bootstrap ..."
+kubectl --context kind-bootstrap -n ingress-nginx wait --for=condition=available deploy/ingress-nginx-controller --timeout=300s
 
 echo ""
 echo "Kind topology is up."
@@ -45,7 +42,8 @@ echo "  kubectl --context kind-bootstrap get nodes"
 echo "  kubectl --context kind-workload-dev get nodes"
 echo "  kubectl --context kind-workload-prod get nodes"
 echo ""
-echo "Ingress (no apps deployed yet):"
-echo "  bootstrap      http://127.0.0.1:8080"
-echo "  workload-dev   http://127.0.0.1:8081"
-echo "  workload-prod  http://127.0.0.1:8082"
+echo "Ingress (Argo CD on bootstrap only):"
+echo "  bootstrap      http://argocd.localhost:8080"
+echo "Apps use Envoy Gateway (cloud-provider-kind), not ingress-nginx:"
+echo "  workload-dev   http://weather-api.cnpe-dev.localhost/"
+echo "  workload-prod  http://weather-api.cnpe-prod.localhost:8088/"

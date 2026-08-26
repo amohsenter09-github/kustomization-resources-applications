@@ -13,12 +13,6 @@ images:
 
 patches:
   - target:
-      group: networking.k8s.io
-      version: v1
-      kind: Ingress
-      name: air-quality-api
-    path: ingress-host.patch.yaml
-  - target:
       group: gateway.networking.k8s.io
       version: v1
       kind: HTTPRoute
