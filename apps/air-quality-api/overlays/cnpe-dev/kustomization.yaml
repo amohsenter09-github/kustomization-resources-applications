@@ -4,6 +4,8 @@ kind: Kustomization
 resources:
   - ../../base
   - namespace.yaml
+  - postgres-configmap.yaml
+  - postgres.yaml
 
 namespace: air-quality-api-cnpe-dev
 
@@ -19,3 +21,14 @@ patches:
       name: air-quality-api
     path: httproute-host.patch.yaml
   - path: image-pull-policy.patch.yaml
+  - target:
+      version: v1
+      kind: ConfigMap
+      name: air-quality-api
+    path: configmap-db.patch.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: air-quality-api
+    path: deployment-db.patch.yaml

@@ -1,0 +1,6 @@
+- op: add
+  path: /data/DATABASE_URL
+  value: "postgresql+asyncpg://weather:weather@postgres:5432/weather"
+- op: replace
+  path: /data/UI_THEME
+  value: blue

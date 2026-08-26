@@ -10,3 +10,4 @@ data:
   OPEN_METEO_BASE_URL: https://api.open-meteo.com/v1
   OPEN_METEO_GEOCODING_BASE_URL: https://geocoding-api.open-meteo.com/v1
   HTTP_TIMEOUT_SECONDS: "10"
+  UI_THEME: orange

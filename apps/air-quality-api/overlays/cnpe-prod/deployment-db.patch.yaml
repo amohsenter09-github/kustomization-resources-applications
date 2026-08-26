@@ -1,0 +1,16 @@
+- op: add
+  path: /spec/template/spec/initContainers
+  value:
+    - name: wait-postgres
+      image: postgres:16
+      imagePullPolicy: IfNotPresent
+      envFrom:
+        - configMapRef:
+            name: postgres
+      command:
+        - sh
+        - -c
+        - until pg_isready -h postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do sleep 2; done
+- op: replace
+  path: /spec/template/spec/containers/0/readinessProbe/httpGet/path
+  value: /ready
