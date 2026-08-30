@@ -11,6 +11,7 @@ namespace: weather-api-cnpe-prod
 
 images:
   - name: weather-api
+    newName: rg.fr-par.scw.cloud/cnpe/weather-api
     newTag: "01"
 
 patches:

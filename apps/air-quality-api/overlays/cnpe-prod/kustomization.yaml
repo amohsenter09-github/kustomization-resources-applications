@@ -11,6 +11,7 @@ namespace: air-quality-api-cnpe-prod
 
 images:
   - name: air-quality-api
+    newName: rg.fr-par.scw.cloud/cnpe/air-quality-api
     newTag: "01"
 
 patches:

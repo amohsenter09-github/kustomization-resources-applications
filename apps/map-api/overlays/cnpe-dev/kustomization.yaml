@@ -11,6 +11,7 @@ namespace: map-api-cnpe-dev
 
 images:
   - name: map-api
+    newName: rg.fr-par.scw.cloud/cnpe/map-api
     newTag: "01"
 
 patches:
