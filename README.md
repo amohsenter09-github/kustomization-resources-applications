@@ -1,30 +1,42 @@
 # kustomization-resources-applications
 
-Global Kubernetes manifests for the Weather, Air Quality, and Map microservices.
+Kustomize templates for the sample workloads. This repo does not contain app source or Helm operators.
 
-Application code and Dockerfiles live in the app repos. This repo owns Deployments, Services, HTTPRoutes, ConfigMaps, environment overlays, and the local Kind cluster topology.
+Argo CD on the bootstrap cluster clones this repository and applies one overlay per app per environment. Operators (Envoy Gateway, Grafana, Prometheus, later Kyverno / Gatekeeper) live in [bootstrap-control-plane](https://github.com/amohsenter09-github/bootstrap-control-plane) as Helm charts.
 
-All overlays currently deploy image tag **`01`**.
-
-## Local Kind topology
-
-Run three Kind clusters on Docker Desktop. Do not deploy apps until the clusters are up.
+## What this implements
 
 ```
-MacBook
-   │
-Docker Desktop
-   │
-   ├─ bootstrap      Kind   (platform, no app workloads)
-   ├─ workload-dev   Kind   (cnpe-dev overlays)
-   └─ workload-prod  Kind   (cnpe-prod overlays)
+apps/<service>/
+  base/                 Deployment, Service, HTTPRoute, ConfigMap
+  overlays/local        Kind single-cluster, image :01
+  overlays/cnpe-dev     Scaleway workload-dev, registry :02
+  overlays/cnpe-prod    Scaleway workload-prod, registry :02
 ```
 
-| Cluster | kubecontext | API | HTTP | HTTPS |
+Each `cnpe-*` overlay adds:
+
+- Namespace
+- In-cluster PostgreSQL (StatefulSet + ConfigMap)
+- Image `rg.fr-par.scw.cloud/cnpe/<app>:02`
+- HTTPRoute hostname (`*.cnpe-dev.cloud-master-ai.com` or `*-prod`)
+- `imagePullPolicy` patch
+
+`overlays/cnpe-dev` and `overlays/cnpe-prod` at the repo root apply all three apps at once. Prefer Argo CD Applications (`app-<service>-<env>`) over a direct `kubectl apply`.
+
+## App mapping
+
+| App | Path | Scaleway image | Kind image | Namespace (dev) |
 | --- | --- | --- | --- | --- |
-| bootstrap | `kind-bootstrap` | `127.0.0.1:16443` | 8080 | 8443 |
-| workload-dev | `kind-workload-dev` | `127.0.0.1:16444` | 8081 | 8444 |
-| workload-prod | `kind-workload-prod` | `127.0.0.1:16445` | 8082 | 8445 |
+| [weather-api-fastapi](https://github.com/amohsenter09-github/weather-api-fastapi) | `apps/weather-api` | `rg.fr-par.scw.cloud/cnpe/weather-api:02` | `weather-api:01` | `weather-api-cnpe-dev` |
+| [air-quality-api](https://github.com/amohsenter09-github/air-quality-api) | `apps/air-quality-api` | `rg.fr-par.scw.cloud/cnpe/air-quality-api:02` | `air-quality-api:01` | `air-quality-api-cnpe-dev` |
+| [map-api](https://github.com/amohsenter09-github/map-api) | `apps/map-api` | `rg.fr-par.scw.cloud/cnpe/map-api:02` | `map-api:01` | `map-api-cnpe-dev` |
+
+Service ports: weather **8000**, air-quality **8001**, map **8002**. Container port is **8000** for all three.
+
+## Local Kind
+
+Three clusters (`bootstrap`, `workload-dev`, `workload-prod`) match Scaleway names so Argo CD destinations do not change.
 
 ```bash
 bash scripts/kind-up.sh
@@ -32,44 +44,18 @@ bash scripts/kind-status.sh
 bash scripts/kind-down.sh
 ```
 
-`kind-up.sh` creates the clusters and installs ingress-nginx on **bootstrap** only (Argo CD). Workload clusters use Envoy Gateway.
+`kind-up.sh` installs ingress-nginx on **bootstrap** only. Workload clusters use Envoy Gateway from the control-plane repo.
 
-When you are ready to deploy apps, use Argo CD from the sibling `bootstrap-control-plane` repo. Direct apply is only a fallback:
-
-```bash
-kubectl --context kind-workload-dev apply -k overlays/cnpe-dev
-kubectl --context kind-workload-prod apply -k overlays/cnpe-prod
-```
-
-Leave `kind-bootstrap` for Argo CD. `overlays/local` is still available if you want a single-cluster apply.
-
-## App mapping
-
-| App repo | Kustomize path | Image | Service port | Container port | Deploy onto |
-| --- | --- | --- | --- | --- | --- |
-| [weather-api-fastapi](https://github.com/amohsenter09-github/weather-api-fastapi) | `apps/weather-api` | `weather-api:01` | 8000 | 8000 | workload-dev / workload-prod |
-| [air-quality-api](https://github.com/amohsenter09-github/air-quality-api) | `apps/air-quality-api` | `air-quality-api:01` | 8001 | 8000 | workload-dev / workload-prod |
-| [map-api](https://github.com/amohsenter09-github/map-api) | `apps/map-api` | `map-api:01` | 8002 | 8000 | workload-dev / workload-prod |
-
-Each app has `base/` plus overlays for `local`, `cnpe-dev`, and `cnpe-prod`. Ingress `/` serves the GUI; `/docs` and the JSON APIs stay on the same Service.
-
-## Cluster overlays
-
-Apply all three apps at once (after Kind is up):
-
-```bash
-kubectl --context kind-workload-dev apply -k overlays/cnpe-dev
-kubectl --context kind-workload-prod apply -k overlays/cnpe-prod
-```
-
-Apply one app:
+Direct apply (fallback):
 
 ```bash
 kubectl --context kind-workload-dev apply -k apps/weather-api/overlays/cnpe-dev
-```
-
-Validate manifests:
-
-```bash
 bash scripts/kustomize-build.sh
 ```
+
+Leave `kind-bootstrap` for Argo CD.
+
+## Related
+
+- GitOps Applications: [bootstrap-control-plane](https://github.com/amohsenter09-github/bootstrap-control-plane)
+- Clusters and registry: [scaleway-infrastructure](https://github.com/amohsenter09-github/scaleway-infrastructure)
