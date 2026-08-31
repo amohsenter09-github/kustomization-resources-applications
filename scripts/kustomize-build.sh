@@ -7,16 +7,12 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
 OVERLAYS=(
-  "apps/weather-api/overlays/local"
   "apps/weather-api/overlays/cnpe-dev"
   "apps/weather-api/overlays/cnpe-prod"
-  "apps/air-quality-api/overlays/local"
   "apps/air-quality-api/overlays/cnpe-dev"
   "apps/air-quality-api/overlays/cnpe-prod"
-  "apps/map-api/overlays/local"
   "apps/map-api/overlays/cnpe-dev"
   "apps/map-api/overlays/cnpe-prod"
-  "overlays/local"
   "overlays/cnpe-dev"
   "overlays/cnpe-prod"
 )

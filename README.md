@@ -9,7 +9,6 @@ Argo CD on the bootstrap cluster clones this repository and applies one overlay 
 ```
 apps/<service>/
   base/                 Deployment, Service, HTTPRoute, ConfigMap
-  overlays/local        Kind single-cluster, image :01
   overlays/cnpe-dev     Scaleway workload-dev, registry :02
   overlays/cnpe-prod    Scaleway workload-prod, registry :02
 ```
@@ -26,34 +25,25 @@ Each `cnpe-*` overlay adds:
 
 ## App mapping
 
-| App | Path | Scaleway image | Kind image | Namespace (dev) |
-| --- | --- | --- | --- | --- |
-| [weather-api-fastapi](https://github.com/amohsenter09-github/weather-api-fastapi) | `apps/weather-api` | `rg.fr-par.scw.cloud/cnpe/weather-api:02` | `weather-api:01` | `weather-api-cnpe-dev` |
-| [air-quality-api](https://github.com/amohsenter09-github/air-quality-api) | `apps/air-quality-api` | `rg.fr-par.scw.cloud/cnpe/air-quality-api:02` | `air-quality-api:01` | `air-quality-api-cnpe-dev` |
-| [map-api](https://github.com/amohsenter09-github/map-api) | `apps/map-api` | `rg.fr-par.scw.cloud/cnpe/map-api:02` | `map-api:01` | `map-api-cnpe-dev` |
+| App | Path | Scaleway image | Namespace (dev) |
+| --- | --- | --- | --- |
+| [weather-api-fastapi](https://github.com/amohsenter09-github/weather-api-fastapi) | `apps/weather-api` | `rg.fr-par.scw.cloud/cnpe/weather-api:02` | `weather-api-cnpe-dev` |
+| [air-quality-api](https://github.com/amohsenter09-github/air-quality-api) | `apps/air-quality-api` | `rg.fr-par.scw.cloud/cnpe/air-quality-api:02` | `air-quality-api-cnpe-dev` |
+| [map-api](https://github.com/amohsenter09-github/map-api) | `apps/map-api` | `rg.fr-par.scw.cloud/cnpe/map-api:02` | `map-api-cnpe-dev` |
 
 Service ports: weather **8000**, air-quality **8001**, map **8002**. Container port is **8000** for all three.
 
-## Local Kind
-
-Three clusters (`bootstrap`, `workload-dev`, `workload-prod`) match Scaleway names so Argo CD destinations do not change.
+## Validate overlays
 
 ```bash
-bash scripts/kind-up.sh
-bash scripts/kind-status.sh
-bash scripts/kind-down.sh
-```
-
-`kind-up.sh` installs ingress-nginx on **bootstrap** only. Workload clusters use Envoy Gateway from the control-plane repo.
-
-Direct apply (fallback):
-
-```bash
-kubectl --context kind-workload-dev apply -k apps/weather-api/overlays/cnpe-dev
 bash scripts/kustomize-build.sh
 ```
 
-Leave `kind-bootstrap` for Argo CD.
+Direct apply (fallback; Argo CD is the intended path):
+
+```bash
+kubectl --context workload-dev apply -k apps/weather-api/overlays/cnpe-dev
+```
 
 ## Related
 
