@@ -2,34 +2,40 @@
 
 Kustomize templates for the sample workloads. This repo does not contain app source or Helm operators.
 
-Argo CD on the bootstrap cluster clones this repository and applies one overlay per app per environment. Operators (Envoy Gateway, Grafana, Prometheus, later Kyverno / Gatekeeper) live in [bootstrap-control-plane](https://github.com/amohsenter09-github/bootstrap-control-plane) as Helm charts.
+Argo CD on the bootstrap cluster clones this repository and applies one overlay per app per environment. Operators (AWS Load Balancer Controller, Envoy Gateway, Grafana, Prometheus, later Kyverno / Gatekeeper) live in [bootstrap-control-plane](https://github.com/amohsenter09-github/bootstrap-control-plane) as Helm charts.
 
 ## What this implements
 
 ```
 apps/<service>/
   base/                 Deployment, Service, HTTPRoute, ConfigMap
-  overlays/cnpe-dev     Scaleway workload-dev, registry :02
-  overlays/cnpe-prod    Scaleway workload-prod, registry :02
+  overlays/cnpe-dev     EKS workload-dev, ECR :02
+  overlays/cnpe-prod    EKS workload-prod, ECR :02
 ```
 
 Each `cnpe-*` overlay adds:
 
 - Namespace
 - In-cluster PostgreSQL (StatefulSet + ConfigMap)
-- Image `rg.fr-par.scw.cloud/cnpe/<app>:02`
+- Image `ACCOUNT.dkr.ecr.eu-west-1.amazonaws.com/cnpe/<app>:02`
 - HTTPRoute hostname (`*.cnpe-dev.cloud-master-ai.com` or `*-prod`)
 - `imagePullPolicy` patch
+
+Overlays ship with placeholder account `000000000000`. After the first Terraform apply, rewrite them and **commit** (Argo CD clones GitHub):
+
+```bash
+bash scripts/set-ecr-registry.sh
+```
 
 `overlays/cnpe-dev` and `overlays/cnpe-prod` at the repo root apply all three apps at once. Prefer Argo CD Applications (`app-<service>-<env>`) over a direct `kubectl apply`.
 
 ## App mapping
 
-| App | Path | Scaleway image | Namespace (dev) |
+| App | Path | ECR image | Namespace (dev) |
 | --- | --- | --- | --- |
-| [weather-api-fastapi](https://github.com/amohsenter09-github/weather-api-fastapi) | `apps/weather-api` | `rg.fr-par.scw.cloud/cnpe/weather-api:02` | `weather-api-cnpe-dev` |
-| [air-quality-api](https://github.com/amohsenter09-github/air-quality-api) | `apps/air-quality-api` | `rg.fr-par.scw.cloud/cnpe/air-quality-api:02` | `air-quality-api-cnpe-dev` |
-| [map-api](https://github.com/amohsenter09-github/map-api) | `apps/map-api` | `rg.fr-par.scw.cloud/cnpe/map-api:02` | `map-api-cnpe-dev` |
+| [weather-api-fastapi](https://github.com/amohsenter09-github/weather-api-fastapi) | `apps/weather-api` | `ACCOUNT.dkr.ecr.eu-west-1.amazonaws.com/cnpe/weather-api:02` | `weather-api-cnpe-dev` |
+| [air-quality-api](https://github.com/amohsenter09-github/air-quality-api) | `apps/air-quality-api` | `ACCOUNT.dkr.ecr.eu-west-1.amazonaws.com/cnpe/air-quality-api:02` | `air-quality-api-cnpe-dev` |
+| [map-api](https://github.com/amohsenter09-github/map-api) | `apps/map-api` | `ACCOUNT.dkr.ecr.eu-west-1.amazonaws.com/cnpe/map-api:02` | `map-api-cnpe-dev` |
 
 Service ports: weather **8000**, air-quality **8001**, map **8002**. Container port is **8000** for all three.
 
@@ -48,4 +54,4 @@ kubectl --context workload-dev apply -k apps/weather-api/overlays/cnpe-dev
 ## Related
 
 - GitOps Applications: [bootstrap-control-plane](https://github.com/amohsenter09-github/bootstrap-control-plane)
-- Clusters and registry: [scaleway-infrastructure](https://github.com/amohsenter09-github/scaleway-infrastructure)
+- Clusters and registry: [aws-infrastructure](https://github.com/amohsenter09-github/aws-infrastructure)

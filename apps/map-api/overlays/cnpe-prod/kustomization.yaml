@@ -11,7 +11,7 @@ namespace: map-api-cnpe-prod
 
 images:
   - name: map-api
-    newName: rg.fr-par.scw.cloud/cnpe/map-api
+    newName: 000000000000.dkr.ecr.eu-west-1.amazonaws.com/cnpe/map-api
     newTag: "02"
 
 patches:
