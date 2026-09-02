@@ -11,7 +11,7 @@ namespace: weather-api-cnpe-prod
 
 images:
   - name: weather-api
-    newName: 000000000000.dkr.ecr.eu-west-1.amazonaws.com/cnpe/weather-api
+    newName: 918780499156.dkr.ecr.eu-west-1.amazonaws.com/cnpe/weather-api
     newTag: "02"
 
 patches:
